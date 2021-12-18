@@ -32,6 +32,9 @@ namespace b2c_dual_signin_api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "b2c_dual_signin_api", Version = "v1" });
             });
+
+            // Load the app settings section and bind to AppSettings object graph
+            services.Configure<Models.AppSettings>(Configuration.GetSection("AppSettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -12,6 +12,7 @@ using b2c_dual_signin_api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 
@@ -23,10 +24,12 @@ namespace b2c_dual_signin_api.Controllers
     {
 
         private readonly ILogger<GetAADProfileController> _logger;
+        private readonly AppSettings _appSettings;
 
-        public GetAADProfileController(ILogger<GetAADProfileController> logger)
+        public GetAADProfileController(ILogger<GetAADProfileController> logger, IOptions<AppSettings> appSettings)
         {
             _logger = logger;
+            _appSettings = appSettings.Value;
         }
 
 
@@ -46,7 +49,8 @@ namespace b2c_dual_signin_api.Controllers
 
             // Initialize the client credential auth provider
             var scopes = new[] { "https://graph.microsoft.com/.default" };
-            var clientSecretCredential = new ClientSecretCredential(AppSettings.AAD.TenantId, AppSettings.AAD.ClientId, AppSettings.AAD.ClientSecret);
+            var clientSecretCredential = new ClientSecretCredential(_appSettings.TenantId, _appSettings.ClientId, _appSettings.ClientSecret);
+            
             var graphClient = new GraphServiceClient(clientSecretCredential, scopes);
 
             try
