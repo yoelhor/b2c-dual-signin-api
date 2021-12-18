@@ -1,0 +1,5 @@
+{
+    "appService.preDeployTask": "publish-release",
+    "appService.deploySubpath": "bin/Release/net5.0/publish",
+    "appService.defaultWebAppToDeploy": "/subscriptions/4d142eb4-d891-4281-ab5c-91981d114a3d/resourceGroups/appsvc_windows_centralus_basic/providers/Microsoft.Web/sites/b2c-dual-signin-api"
+}

@@ -62,6 +62,7 @@ namespace b2c_dual_signin_api.Controllers
             try
             {
                 // Update user by object ID
+                // For more information, see https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0&tabs=http
                 await graphClient.Users[inputClaims.objectId]
                    .Request()
                    .UpdateAsync(user);
