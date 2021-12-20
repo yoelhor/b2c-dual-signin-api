@@ -36,6 +36,16 @@ namespace b2c_dual_signin_api.Controllers
         [HttpPost]
         public async Task<ActionResult> Post()
         {
+            // Check client certificate
+            try
+            {
+                ClientCertificateAuthHelper.CheckCertificate(this.Request, _appSettings);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.Conflict, new B2CResponseModel(ex.Message, HttpStatusCode.Conflict));
+            }
+
             InputClaimsModel inputClaims;
 
             try
@@ -49,7 +59,8 @@ namespace b2c_dual_signin_api.Controllers
 
             // Initialize the client credential auth provider
             var scopes = new[] { "https://graph.microsoft.com/.default" };
-            var clientSecretCredential = new ClientSecretCredential(_appSettings.TenantId, _appSettings.ClientId, _appSettings.ClientSecret);            var graphClient = new GraphServiceClient(clientSecretCredential, scopes);
+            var clientSecretCredential = new ClientSecretCredential(_appSettings.TenantId, _appSettings.ClientId, _appSettings.ClientSecret); 
+            var graphClient = new GraphServiceClient(clientSecretCredential, scopes);
 
             var user = new User
             {
@@ -77,6 +88,6 @@ namespace b2c_dual_signin_api.Controllers
             }
         }
 
-        
+
     }
 }

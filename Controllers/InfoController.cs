@@ -34,9 +34,20 @@ namespace b2c_dual_signin_api.Controllers
 
 
         [HttpGet]
-        public  ActionResult Get()
+        public ActionResult Get()
         {
-            return Ok(new {
+            // Check client certificate
+            try
+            {
+                ClientCertificateAuthHelper.CheckCertificate(this.Request, _appSettings);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.Conflict, new B2CResponseModel(ex.Message, HttpStatusCode.Conflict));
+            }
+
+            return Ok(new
+            {
                 Tenant = _appSettings.TenantId
             });
         }
