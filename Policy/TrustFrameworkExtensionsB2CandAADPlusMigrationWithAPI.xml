@@ -1,0 +1,1128 @@
+<TrustFrameworkPolicy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06" PolicySchemaVersion="0.3.0.0" TenantId="yourtenant.onmicrosoft.com" PolicyId="B2C_1A_TrustFrameworkExtensionsB2CandAAD" PublicPolicyUri="http://yourtenant.onmicrosoft.com/B2C_1A_TrustFrameworkExtensionsB2CandAAD">
+
+  <BasePolicy>
+    <TenantId>yourtenant.onmicrosoft.com</TenantId>
+    <PolicyId>B2C_1A_TrustFrameworkExtensions</PolicyId>
+  </BasePolicy>
+
+  <BuildingBlocks>
+    <ClaimsSchema>
+      <!-- Remote IDP claims-->
+      <ClaimType Id="remoteAadObjectID">
+        <DisplayName>remoteAadObjectID</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>Add help text here</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="client_secret">
+        <DisplayName>client_secret</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>Add help text here</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="resource_id">
+        <DisplayName>resource_id</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>Add help text here</AdminHelpText>
+      </ClaimType>
+      <!-- End of remote IDP claims-->
+
+      <!-- CA claims  -->
+      <ClaimType Id="IP-Address">
+        <DisplayName>IP Address</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText />
+        <UserHelpText />
+      </ClaimType>
+      <ClaimType Id="isLocalAccountSignUp">
+        <DisplayName>isLocalAccountSignUp</DisplayName>
+        <DataType>boolean</DataType>
+      </ClaimType>
+      <ClaimType Id="responseMsg">
+        <DisplayName></DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>A claim responsible for holding response messages to send to the relying party</AdminHelpText>
+        <UserHelpText>A claim responsible for holding response messages to send to the relying party</UserHelpText>
+        <UserInputType>Paragraph</UserInputType>
+      </ClaimType>
+      <ClaimType Id="conditionalAccessClaimCollection">
+        <DisplayName>Conditional Access claims</DisplayName>
+        <DataType>stringCollection</DataType>
+        <AdminHelpText>The list of claims which are the result of CA check</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="trustFrameworkPolicy">
+        <DisplayName>trustFrameworkPolicy</DisplayName>
+        <DataType>string</DataType>
+        <UserHelpText>TtrustFrameworkPolicy name.</UserHelpText>
+      </ClaimType>
+      <ClaimType Id="ConditionalAccessStatus">
+        <DisplayName>The status of CA evaluation</DisplayName>
+        <DataType>stringCollection</DataType>
+        <AdminHelpText>The status of CA evaluation</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="AuthenticationMethodsUsed">
+        <DisplayName>Authentication methods used</DisplayName>
+        <DataType>stringCollection</DataType>
+        <AdminHelpText>The list of authentication methods used</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="AuthenticationMethodUsed">
+        <DisplayName>Authentication method used</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>The authentication method used</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="IsFederated">
+        <DisplayName>IsFederated</DisplayName>
+        <DataType>boolean</DataType>
+        <AdminHelpText>Is user authenticated via an external identity provider</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="IsMfaRegistered">
+        <DisplayName>IsMfaRegistered</DisplayName>
+        <DataType>boolean</DataType>
+        <AdminHelpText>Is user registered for MFA</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="CAChallengeIsMfa">
+        <DisplayName>CAChallengeIsMfa</DisplayName>
+        <DataType>boolean</DataType>
+      </ClaimType>
+      <ClaimType Id="CAChallengeIsChgPwd">
+        <DisplayName>CAChallengeIsChgPwd</DisplayName>
+        <DataType>boolean</DataType>
+      </ClaimType>
+      <ClaimType Id="CAChallengeIsBlock">
+        <DisplayName>CAChallengeIsBlock</DisplayName>
+        <DataType>boolean</DataType>
+      </ClaimType>
+      <ClaimType Id="estsRequestId">
+        <DisplayName>estsRequestId</DisplayName>
+        <DataType>string</DataType>
+      </ClaimType>
+      <!-- End of CA claims -->
+      <ClaimType Id="B2CAccountStatus">
+        <DisplayName>B2CAccountStatus</DisplayName>
+        <DataType>string</DataType>
+      </ClaimType>
+      <ClaimType Id="AADAccountStatus">
+        <DisplayName>AADAccountStatus</DisplayName>
+        <DataType>string</DataType>
+      </ClaimType>
+      <ClaimType Id="step">
+        <DisplayName>Step</DisplayName>
+        <DataType>string</DataType>
+      </ClaimType>
+      <ClaimType Id="steps">
+        <DisplayName>Steps</DisplayName>
+        <DataType>stringCollection</DataType>
+      </ClaimType>
+      <ClaimType Id="msGraphReqBody">
+        <DisplayName>msGraphReqBody</DisplayName>
+        <DataType>string</DataType>
+      </ClaimType>
+      <ClaimType Id="continueOnPasswordExpiration">
+        <DisplayName>continueOnPasswordExpiration</DisplayName>
+        <DataType>boolean</DataType>
+        <AdminHelpText>continue ests non-interactive upon password expiration</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="passwordExpired">
+        <DisplayName>passwordExpired</DisplayName>
+        <DataType>boolean</DataType>
+        <AdminHelpText>continue ests non-interactive upon password expiration</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="correlationId">
+        <DisplayName>correlationId</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>Add help text here</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="phoneType">
+        <DisplayName>phoneType</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>Add help text here</AdminHelpText>
+      </ClaimType>
+
+    </ClaimsSchema>
+    <ClaimsTransformations>
+      <!-- Conditional access claims transformations-->
+      <ClaimsTransformation Id="AddToAuthenticationMethodsUsed" TransformationMethod="AddItemToStringCollection">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="AuthenticationMethodUsed" TransformationClaimType="item" />
+          <InputClaim ClaimTypeReferenceId="AuthenticationMethodsUsed" TransformationClaimType="collection" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="AuthenticationMethodsUsed" TransformationClaimType="collection" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="CreatePasswordAuthenticationMethodClaim" TransformationMethod="CreateStringClaim">
+        <InputParameters>
+          <InputParameter Id="value" DataType="string" Value="Password" />
+        </InputParameters>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="AuthenticationMethodUsed" TransformationClaimType="createdClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="CreateOneTimePasscodeAuthenticationMethodClaim" TransformationMethod="CreateStringClaim">
+        <InputParameters>
+          <InputParameter Id="value" DataType="string" Value="OneTimePasscode" />
+        </InputParameters>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="AuthenticationMethodUsed" TransformationClaimType="createdClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="IsMfaRegisteredCT" TransformationMethod="DoesClaimExist">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="IsMfaRegistered" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="SetCAChallengeIsMfa" TransformationMethod="StringCollectionContains">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="conditionalAccessClaimCollection" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <InputParameters>
+          <InputParameter Id="item" DataType="string" Value="mfa" />
+          <InputParameter Id="ignoreCase" DataType="string" Value="true" />
+        </InputParameters>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="CAChallengeIsMfa" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="SetCAChallengeIsChgPwd" TransformationMethod="StringCollectionContains">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="conditionalAccessClaimCollection" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <InputParameters>
+          <InputParameter Id="item" DataType="string" Value="chg_pwd" />
+          <InputParameter Id="ignoreCase" DataType="string" Value="true" />
+        </InputParameters>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="CAChallengeIsChgPwd" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="SetCAChallengeIsBlock" TransformationMethod="StringCollectionContains">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="conditionalAccessClaimCollection" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <InputParameters>
+          <InputParameter Id="item" DataType="string" Value="block" />
+          <InputParameter Id="ignoreCase" DataType="string" Value="true" />
+        </InputParameters>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="CAChallengeIsBlock" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <!-- End of conditional access claims transformations-->
+
+      <!-- Validation steps-->
+      <ClaimsTransformation Id="AddStep" TransformationMethod="AddItemToStringCollection">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="step" TransformationClaimType="item" />
+          <InputClaim ClaimTypeReferenceId="steps" TransformationClaimType="collection" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="steps" TransformationClaimType="collection" />
+        </OutputClaims>
+      </ClaimsTransformation>
+
+      <ClaimsTransformation Id="GenerateMsGraphRequestBody" TransformationMethod="GenerateJson">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="displayName" TransformationClaimType="displayName" />
+          <InputClaim ClaimTypeReferenceId="signInName" TransformationClaimType="userPrincipalName" />
+          <InputClaim ClaimTypeReferenceId="password" TransformationClaimType="passwordProfile.password" />
+        </InputClaims>
+        <InputParameters>
+          <InputParameter Id="accountEnabled" DataType="string" Value="true" />
+          <InputParameter Id="mailNickname" DataType="string" Value="Migrated" />
+          <InputParameter Id="passwordProfile.forceChangePasswordNextSignIn" DataType="string" Value="false" />
+        </InputParameters>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="msGraphReqBody" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+    </ClaimsTransformations>
+  </BuildingBlocks>
+
+  <ClaimsProviders>
+
+    <ClaimsProvider>
+      <DisplayName>Local Account SignIn</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="login-NonInteractive">
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="continueOnPasswordExpiration" DefaultValue="true" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="estsRequestId" />
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="login-NonInteractive" AlwaysUseDefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="passwordExpired" DefaultValue="false" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="AddStep" />
+          </OutputClaimsTransformations>
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>Local Account</DisplayName>
+      <TechnicalProfiles>
+
+        <TechnicalProfile Id="LocalAccountSignUpWithLogonEmail">
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="isLocalAccountSignUp" DefaultValue="true" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="ShowBlockPage">
+          <DisplayName>Show Block message</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ContentDefinitionReferenceId">api.selfasserted</Item>
+            <Item Key="TokenLifeTimeInSeconds">3600</Item>
+            <Item Key="AllowGenerationOfClaimsWithNullValues">true</Item>
+            <Item Key="setting.showContinueButton">false</Item>
+            <Item Key="setting.showCancelButton">false</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="issuer_secret" StorageReferenceId="B2C_1A_TokenSigningKeyContainer" />
+          </CryptographicKeys>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="responseMsg" DefaultValue="Due to recent activity associated with your account, your login has been temporarily blocked." />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="responseMsg" />
+          </OutputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+          <EnabledForUserJourneys>Always</EnabledForUserJourneys>
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-EmailCustom">
+          <DisplayName>Local Account Signin</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="SignUpTarget">SignUpWithLogonEmailExchange</Item>
+            <Item Key="setting.operatingMode">Email</Item>
+            <Item Key="ContentDefinitionReferenceId">api.localaccountsignin</Item>
+
+            <!-- Conditinal access metadata-->
+            <Item Key="LocalAccountProfile">true</Item>
+            <!-- End of conditinal access metadata-->
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="signInName" Required="true" />
+            <OutputClaim ClaimTypeReferenceId="password" Required="true" />
+            <OutputClaim ClaimTypeReferenceId="remoteAadObjectID" />
+
+            <OutputClaim ClaimTypeReferenceId="givenName" />
+            <OutputClaim ClaimTypeReferenceId="surName" />
+            <OutputClaim ClaimTypeReferenceId="displayName" />
+            <OutputClaim ClaimTypeReferenceId="objectId" DefaultValue="0" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" />
+
+            <!-- Conditional output claim-->
+            <OutputClaim ClaimTypeReferenceId="isFederated" DefaultValue="false" AlwaysUseDefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="estsRequestId" DefaultValue="00000000-0000-0000-0000-000000000000" />
+            <OutputClaim ClaimTypeReferenceId="steps" />
+            <OutputClaim ClaimTypeReferenceId="B2CAccountStatus" DefaultValue="" />
+            <OutputClaim ClaimTypeReferenceId="AADAccountStatus" DefaultValue="" />
+            <!-- End of conditinal output claim-->
+
+            <!-- Password expiration-->
+            <OutputClaim ClaimTypeReferenceId="passwordExpired" DefaultValue="false" />
+
+            <OutputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" DefaultValue="" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <!-- Conditinal output claims transformations-->
+            <OutputClaimsTransformation ReferenceId="CreatePasswordAuthenticationMethodClaim" />
+            <OutputClaimsTransformation ReferenceId="AddToAuthenticationMethodsUsed" />
+            <!-- End of conditinal output claims transformations-->
+          </OutputClaimsTransformations>
+          <ValidationTechnicalProfiles>
+
+            <!-- First try to find the account in Azure AD B2C, so we can get the account status. Then call the AAD Graph API.
+                 If such an account doesn't exist in Azure AD B2C:
+                    - If the AadAccountStatus is "0" default, or null (active), we create a shadow account without the password.
+                    - If the AadAccountStatus is "1" (needs to be migrated to B2C), 
+                      we create or update the password, and set the B2CAccountStatus to "2" (fully migrated) to the B2C. 
+                      So, next time the user's credentials will be validated against the B2C instead of the AAD
+                If the account exists in Azure AD B2C, check the status of the account:
+                    - If the B2CAccountStatus is "0" (default value) or null, check the credentials against AAD
+                    - If the B2CAccountStatus is "1", (needs to be migrated to AAD), check the credentials against B2C. 
+                         Then, create an account in AAD, and change the B2CAccountStatus to "0"
+                    - If the B2CAccountStatus is "2" (fully migrated from AAD), check the credentials against B2C
+            -->
+
+            <!-- Try to find the account in Azure AD B2C
+                 Return value B2CAccountStatus. If the account doesn't exist the B2CAccountStatus will be "0".
+                 Run this step for all account -->
+            <ValidationTechnicalProfile ReferenceId="AAD-B2cAccountStatusUsingSignInName-NoError" />
+
+            <!-- Call the REST API to find the account in the AAD.
+                 Return the remoteAadObjectID, user profile and phone number
+                 Run this steps only if the B2CAccountStatus is "0" -->
+            <ValidationTechnicalProfile ReferenceId="REST-GetAADProfile">
+              <Preconditions>
+                <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
+                  <Value>B2CAccountStatus</Value>
+                  <Value>0</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
+              </Preconditions>
+            </ValidationTechnicalProfile>
+
+            <!-- Validate the credentials against the AAD.
+                 Returns conditional access estsRequestId claim
+                 Run this validation technical profile only for if the ADD account exists. 
+                 Note, if the B2CAccountStatus "1" (needs to migrate to AAD), or "2" (fully migrated from AAD), the remoteAadObjectID is always null,
+                 since the previous technical profile is skipped-->
+            <ValidationTechnicalProfile ReferenceId="login-NonInteractive-remote-AAD">
+              <Preconditions>
+                <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+                  <Value>remoteAadObjectID</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
+              </Preconditions>
+            </ValidationTechnicalProfile>
+
+            <!-- Validate the credentials against the B2C.
+                 Returns user objectId and conditional access estsRequestId claim
+                 Run this validation technical profile only for if the ADD account doesn't exist. 
+                 Note, if the B2CAccountStatus is not "0", the remoteAadObjectID is always null, since the previous technical profile is skipped-->
+            <ValidationTechnicalProfile ReferenceId="login-NonInteractive">
+              <Preconditions>
+                <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+                  <Value>remoteAadObjectID</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
+              </Preconditions>
+            </ValidationTechnicalProfile>
+
+            <!-- Migrate AAD to B2C by updating the passsword, and set the B2CAccountStatus to "2" (fully migrated from AAD).
+                 Return nothing
+                 Run this steps only if the AadAccountStatus is "1", and objectId (the B2C objectId exsits). -->
+            <ValidationTechnicalProfile ReferenceId="AAD-MigrateExisingUserToB2C">
+              <Preconditions>
+                <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
+                  <Value>AadAccountStatus</Value>
+                  <Value>1</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
+                <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+                  <Value>objectId</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
+              </Preconditions>
+            </ValidationTechnicalProfile>
+
+            <!-- Migrate AAD to B2C by creating new account, and set the B2CAccountStatus to "2" (fully migrated from AAD).
+                 Return nothing
+                 Run this steps only if the AadAccountStatus is "1", and objectId (the B2C objectId exsits). -->
+            <ValidationTechnicalProfile ReferenceId="AAD-MigrateNewUserToB2C">
+              <Preconditions>
+                <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
+                  <Value>AadAccountStatus</Value>
+                  <Value>1</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
+                <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+                  <Value>objectId</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
+              </Preconditions>
+            </ValidationTechnicalProfile>
+
+            <!-- Migrate B2C user to AAD by creating new account (first setp, create the AAD account).
+                 Return nothing
+                 Run this steps only if the B2CAccountStatus is "1". -->
+            <ValidationTechnicalProfile ReferenceId="REST-MigrateUserToAad">
+              <Preconditions>
+                <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
+                  <Value>B2CAccountStatus</Value>
+                  <Value>1</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
+              </Preconditions>
+            </ValidationTechnicalProfile>
+
+            <!-- Migrate B2C user to AAD by creating new account (second setp, set the B2C account B2CAccountStatus to "0").
+                 Return nothing
+                 Run this steps only if the B2CAccountStatus is "1". -->
+            <ValidationTechnicalProfile ReferenceId="AAD-UpdateB2CAccountMigrationStatusToDefault">
+              <Preconditions>
+                <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
+                  <Value>B2CAccountStatus</Value>
+                  <Value>1</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
+              </Preconditions>
+            </ValidationTechnicalProfile>
+          </ValidationTechnicalProfiles>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>Remote Azure AD</DisplayName>
+      <TechnicalProfiles>
+
+        <TechnicalProfile Id="login-NonInteractive-remote-AAD">
+          <DisplayName>Local Account SignIn</DisplayName>
+          <Protocol Name="OpenIdConnect" />
+          <Metadata>
+            <Item Key="UserMessageIfClaimsPrincipalDoesNotExist">We can't seem to find your account (Remote AAD)</Item>
+            <Item Key="UserMessageIfInvalidPassword">Your password is incorrect (Remote AAD)</Item>
+            <Item Key="UserMessageIfOldPasswordUsed">Looks like you used an old password (Remote AAD)</Item>
+            <Item Key="DefaultMessage">Invalid username or password. (Remote AAD)</Item>
+            <Item Key="ProviderName">https://sts.windows.net/</Item>
+
+            <!-- Action required: change to your tenant -->
+            <Item Key="Issuer">https://sts.windows.net/yourt-aad-tenant/</Item>
+
+            <!-- Action required: change to your tenant -->
+            <Item Key="METADATA">https://login.microsoftonline.com/yourt-aad-tenant/.well-known/openid-configuration</Item>
+
+            <!-- Action required: change to your tenant -->
+            <Item Key="authorization_endpoint">https://login.microsoftonline.com/yourt-aad-tenant/oauth2/token</Item>
+            <Item Key="HttpBinding">POST</Item>
+
+            <Item Key="response_types">id_token</Item>
+            <Item Key="response_mode">query</Item>
+            <Item Key="scope">email openid</Item>
+            <Item Key="UsePolicyInRedirectUri">false</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" PartnerClaimType="username" Required="true" />
+            <InputClaim ClaimTypeReferenceId="password" Required="true" />
+            <InputClaim ClaimTypeReferenceId="grant_type" DefaultValue="password" AlwaysUseDefaultValue="true" />
+            <InputClaim ClaimTypeReferenceId="continueOnPasswordExpiration" DefaultValue="true" />
+            <!-- <InputClaim ClaimTypeReferenceId="scope" DefaultValue="https://graph.microsoft.com/.default" /> -->
+            <InputClaim ClaimTypeReferenceId="resource_id" PartnerClaimType="resource" DefaultValue="" />
+
+            <!--Sction required, change to your Azure AD (Not the B2C) application id-->
+            <InputClaim ClaimTypeReferenceId="client_id" DefaultValue="" AlwaysUseDefaultValue="true" />
+            <InputClaim ClaimTypeReferenceId="client_secret" DefaultValue="" AlwaysUseDefaultValue="true" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="remoteAadObjectID" PartnerClaimType="oid" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="remote" AlwaysUseDefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="estsRequestId" />
+            <OutputClaim ClaimTypeReferenceId="passwordExpired" DefaultValue="false" />
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="login-NonInteractive-remote-AAD" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="AddStep" />
+          </OutputClaimsTransformations>
+        </TechnicalProfile>
+        
+        <TechnicalProfile Id="REST-Base">
+          <DisplayName>Base REST API technical profile</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="AuthenticationType">ClientCertificate</Item>
+            <Item Key="SendClaimsIn">Body</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="ClientCertificate" StorageReferenceId="B2C_1A_RestApiClientCertificate" />
+          </CryptographicKeys>
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="REST-GetAADProfile">
+          <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>
+          <Metadata>
+            <Item Key="ServiceUrl">https://b2c-dual-signin-api.azurewebsites.net/GetAADProfile</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="remoteAadObjectID" />
+            <OutputClaim ClaimTypeReferenceId="givenName" />
+            <OutputClaim ClaimTypeReferenceId="surName" />
+            <OutputClaim ClaimTypeReferenceId="displayName" />
+            <OutputClaim ClaimTypeReferenceId="AADAccountStatus" />
+            <OutputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="REST-GetAADProfile" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="AddStep" />
+          </OutputClaimsTransformations>
+          <IncludeTechnicalProfile ReferenceId="REST-Base" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="REST-MigrateUserToAad">
+          <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>
+          <Metadata>
+            <Item Key="ServiceUrl">https://b2c-dual-signin-api.azurewebsites.net/CreateAccount</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" PartnerClaimType="userPrincipalName" />
+            <InputClaim ClaimTypeReferenceId="displayName" />
+            <InputClaim ClaimTypeReferenceId="password" />
+            <InputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
+            <InputClaim ClaimTypeReferenceId="givenName" />
+            <InputClaim ClaimTypeReferenceId="surName" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="remoteAadObjectID" />
+            <OutputClaim ClaimTypeReferenceId="givenName" />
+            <OutputClaim ClaimTypeReferenceId="surName" />
+            <OutputClaim ClaimTypeReferenceId="displayName" />
+            <OutputClaim ClaimTypeReferenceId="AADAccountStatus" />
+            <OutputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="REST-MigrateUserToAad" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="AddStep" />
+          </OutputClaimsTransformations>
+          <IncludeTechnicalProfile ReferenceId="REST-Base" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="SelfAsserted-UpdateAADPassword">
+          <DisplayName>Change password (username)</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ContentDefinitionReferenceId">api.localaccountpasswordreset</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="issuer_secret" StorageReferenceId="B2C_1A_TokenSigningKeyContainer" />
+          </CryptographicKeys>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="remoteAadObjectID" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="newPassword" Required="true" />
+            <OutputClaim ClaimTypeReferenceId="reenterPassword" Required="true" />
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="SelfAsserted-UpdateAADPassword" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+          <ValidationTechnicalProfiles>
+            <ValidationTechnicalProfile ReferenceId="REST-UpdateAADPassword" />
+          </ValidationTechnicalProfiles>
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="REST-UpdateAADPassword">
+          <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>
+           <Metadata>
+            <Item Key="ServiceUrl">https://b2c-dual-signin-api.azurewebsites.net/UpdateAADPassword</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="remoteAadObjectID" PartnerClaimType="objectId" />
+            <InputClaim ClaimTypeReferenceId="newPassword" PartnerClaimType="password" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="REST-UpdateAADPassword" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="AddStep" />
+          </OutputClaimsTransformations>
+          <IncludeTechnicalProfile ReferenceId="REST-Base" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>Azure Active Directory</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="AAD-B2cAccountStatusUsingSignInName-NoError">
+          <Metadata>
+            <Item Key="Operation">Read</Item>
+            <Item Key="RaiseErrorIfClaimsPrincipalDoesNotExist">false</Item>
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" PartnerClaimType="signInNames.emailAddress" Required="true" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="B2CAccountStatus" PartnerClaimType="jobTitle" DefaultValue="0" />
+            <OutputClaim ClaimTypeReferenceId="AadAccountStatus" DefaultValue="0" AlwaysUseDefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="objectId" />
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="AAD-B2cAccountStatusUsingSignInName-NoError" AlwaysUseDefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="AddStep" />
+          </OutputClaimsTransformations>
+          <IncludeTechnicalProfile ReferenceId="AAD-Common" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="AAD-UserReadUsingSignInName-NoError">
+          <Metadata>
+            <Item Key="Operation">Read</Item>
+            <Item Key="RaiseErrorIfClaimsPrincipalDoesNotExist">false</Item>
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" PartnerClaimType="signInNames.emailAddress" Required="true" />
+          </InputClaims>
+          <OutputClaims>
+            <!-- Required claims -->
+            <OutputClaim ClaimTypeReferenceId="objectId" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="localAccountAuthentication" />
+
+            <OutputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
+
+            <!-- Optional claims -->
+            <OutputClaim ClaimTypeReferenceId="userPrincipalName" />
+            <OutputClaim ClaimTypeReferenceId="displayName" />
+            <OutputClaim ClaimTypeReferenceId="accountEnabled" />
+            <OutputClaim ClaimTypeReferenceId="otherMails" />
+            <OutputClaim ClaimTypeReferenceId="signInNames.emailAddress" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="AAD-Common" />
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="AAD-UserWriteRemoteAccount">
+          <Metadata>
+            <Item Key="Operation">Write</Item>
+            <Item Key="RaiseErrorIfClaimsPrincipalAlreadyExists">true</Item>
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" PartnerClaimType="signInNames.emailAddress" Required="true" />
+          </InputClaims>
+          <PersistedClaims>
+            <!-- Required claims -->
+            <PersistedClaim ClaimTypeReferenceId="signInName" PartnerClaimType="signInNames.emailAddress" />
+            <PersistedClaim ClaimTypeReferenceId="signInName" PartnerClaimType="displayName" />
+            <PersistedClaim ClaimTypeReferenceId="newPassword" PartnerClaimType="password" />
+            <PersistedClaim ClaimTypeReferenceId="passwordPolicies" DefaultValue="DisablePasswordExpiration" />
+
+            <!-- <PersistedClaim ClaimTypeReferenceId="Verified.strongAuthenticationPhoneNumber" PartnerClaimType="strongAuthenticationPhoneNumber"/> -->
+          </PersistedClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="objectId" />
+            <OutputClaim ClaimTypeReferenceId="newUser" PartnerClaimType="newClaimsPrincipalCreated" />
+            <OutputClaim ClaimTypeReferenceId="userPrincipalName" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="AAD-Common" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD" />
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="AAD-MigrateNewUserToB2C">
+          <Metadata>
+            <Item Key="Operation">Write</Item>
+            <Item Key="RaiseErrorIfClaimsPrincipalAlreadyExists">true</Item>
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" PartnerClaimType="signInNames.emailAddress" Required="true" />
+          </InputClaims>
+          <PersistedClaims>
+            <!-- Required claims -->
+            <PersistedClaim ClaimTypeReferenceId="signInName" PartnerClaimType="signInNames.emailAddress" />
+            <PersistedClaim ClaimTypeReferenceId="displayName" PartnerClaimType="displayName" />
+            <PersistedClaim ClaimTypeReferenceId="password" PartnerClaimType="password" />
+            <PersistedClaim ClaimTypeReferenceId="passwordPolicies" DefaultValue="DisablePasswordExpiration,DisableStrongPassword" />
+            <PersistedClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
+            <PersistedClaim ClaimTypeReferenceId="B2CAccountStatus" PartnerClaimType="jobTitle" DefaultValue="2" AlwaysUseDefaultValue="true" />
+          </PersistedClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="objectId" />
+            <OutputClaim ClaimTypeReferenceId="newUser" PartnerClaimType="newClaimsPrincipalCreated" />
+            <OutputClaim ClaimTypeReferenceId="userPrincipalName" />
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="AAD-MigrateNewUserToB2C" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="AddStep" />
+          </OutputClaimsTransformations>
+          <IncludeTechnicalProfile ReferenceId="AAD-Common" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD" />
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="AAD-MigrateExisingUserToB2C">
+          <Metadata>
+            <Item Key="Operation">Write</Item>
+            <Item Key="RaiseErrorIfClaimsPrincipalDoesNotExist">true</Item>
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId" Required="true" />
+          </InputClaims>
+          <PersistedClaims>
+            <PersistedClaim ClaimTypeReferenceId="objectId" />
+            <PersistedClaim ClaimTypeReferenceId="password" PartnerClaimType="password" />
+            <PersistedClaim ClaimTypeReferenceId="displayName" />
+            <PersistedClaim ClaimTypeReferenceId="passwordPolicies" DefaultValue="DisablePasswordExpiration,DisableStrongPassword" />
+            <PersistedClaim ClaimTypeReferenceId="accountEnabled" DefaultValue="true" AlwaysUseDefaultValue="true" />
+            <PersistedClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
+            <PersistedClaim ClaimTypeReferenceId="B2CAccountStatus" PartnerClaimType="jobTitle" DefaultValue="2" AlwaysUseDefaultValue="true" />
+          </PersistedClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="AAD-MigrateExisingUserToB2C" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="AddStep" />
+          </OutputClaimsTransformations>
+          <IncludeTechnicalProfile ReferenceId="AAD-Common" />
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="AAD-UpdateB2CAccountMigrationStatusToDefault">
+          <Metadata>
+            <Item Key="Operation">Write</Item>
+            <Item Key="RaiseErrorIfClaimsPrincipalDoesNotExist">true</Item>
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId" Required="true" />
+          </InputClaims>
+          <PersistedClaims>
+            <PersistedClaim ClaimTypeReferenceId="objectId" />
+            <PersistedClaim ClaimTypeReferenceId="accountEnabled" DefaultValue="false" AlwaysUseDefaultValue="true" />
+            <PersistedClaim ClaimTypeReferenceId="B2CAccountStatus" PartnerClaimType="jobTitle" DefaultValue="0" AlwaysUseDefaultValue="true" />
+          </PersistedClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="AAD-UpdateB2CAccountMigrationStatusToDefault" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="AddStep" />
+          </OutputClaimsTransformations>
+          <IncludeTechnicalProfile ReferenceId="AAD-Common" />
+        </TechnicalProfile>
+
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>Conditional Access</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="ConditionalAccessEvaluation">
+          <DisplayName>Conditional Access Provider</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ConditionalAccessProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="OperationType">Evaluation</Item>
+          </Metadata>
+          <InputClaimsTransformations>
+            <InputClaimsTransformation ReferenceId="IsMfaRegisteredCT" />
+          </InputClaimsTransformations>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId" PartnerClaimType="UserId" />
+            <InputClaim ClaimTypeReferenceId="AuthenticationMethodsUsed" />
+            <InputClaim ClaimTypeReferenceId="IsFederated" DefaultValue="false" />
+            <InputClaim ClaimTypeReferenceId="IsMfaRegistered" />
+            <InputClaim ClaimTypeReferenceId="estsRequestId" DefaultValue="00000000-0000-0000-0000-000000000000" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="conditionalAccessClaimCollection" PartnerClaimType="Challenges" />
+            <OutputClaim ClaimTypeReferenceId="ConditionalAccessStatus" PartnerClaimType="MultiConditionalAccessStatus" />
+          </OutputClaims>
+        </TechnicalProfile>
+        <TechnicalProfile Id="ConditionalAccessRemediation">
+          <DisplayName>Conditional Access Remediation</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ConditionalAccessProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="OperationType">Remediation</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="conditionalAccessClaimCollection" PartnerClaimType="ChallengesSatisfied" />
+          </InputClaims>
+        </TechnicalProfile>
+        <TechnicalProfile Id="GenerateCAClaimFlags">
+          <DisplayName>GenerateCAClaimFlags</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="CAChallengeIsMfa" />
+            <OutputClaim ClaimTypeReferenceId="CAChallengeIsChgPwd" />
+            <OutputClaim ClaimTypeReferenceId="CAChallengeIsBlock" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="SetCAChallengeIsMfa" />
+            <OutputClaimsTransformation ReferenceId="SetCAChallengeIsChgPwd" />
+            <OutputClaimsTransformation ReferenceId="SetCAChallengeIsBlock" />
+          </OutputClaimsTransformations>
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>PhoneFactor</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="PhoneFactor-InputOrVerify">
+          <Metadata>
+            <!-- Set the SMS app name-->
+            <Item Key="VerifierFriendlyName">My application</Item>
+          </Metadata>
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+  </ClaimsProviders>
+
+  <UserJourneys>
+    <UserJourney Id="SignUpOrSignInWithB2CandAadWithCA">
+      <OrchestrationSteps>
+
+        <!-- Start the sign-up or sign-in flow. -->
+        <OrchestrationStep Order="1" Type="InvokeSubJourney">
+          <JourneyList>
+            <Candidate SubJourneyReferenceId="IdentityProviderSelection_SignUpSignIn" />
+          </JourneyList>
+        </OrchestrationStep>
+
+        <!-- Conditional access evaluation-->
+        <OrchestrationStep Order="2" Type="InvokeSubJourney">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>isLocalAccountSignUp</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <JourneyList>
+            <Candidate SubJourneyReferenceId="ConditionalAccess_Evaluation" />
+          </JourneyList>
+        </OrchestrationStep>
+
+        <!-- Force password reset-->
+        <OrchestrationStep Order="3" Type="InvokeSubJourney">
+          <Preconditions>
+            <!-- Run password reset if password is expired-->
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
+              <Value>passwordExpired</Value>
+              <Value>False</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <JourneyList>
+            <Candidate SubJourneyReferenceId="PasswordReset" />
+          </JourneyList>
+        </OrchestrationStep>
+
+        <!-- Conditional access block user -->
+        <!-- <OrchestrationStep Order="3" Type="InvokeSubJourney">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>CAChallengeIsBlock</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
+              <Value>CAChallengeIsBlock</Value>
+              <Value>False</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <JourneyList>
+            <Candidate SubJourneyReferenceId="BlockUser" />
+          </JourneyList>
+        </OrchestrationStep> -->
+
+        <!-- Calling MFA sub-journey -->
+        <!-- <OrchestrationStep Order="4" Type="InvokeSubJourney">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>CAChallengeIsMfa</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
+              <Value>CAChallengeIsMfa</Value>
+              <Value>False</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <JourneyList>
+            <Candidate SubJourneyReferenceId="MFA-ExtraUserVerification" />
+          </JourneyList>
+        </OrchestrationStep> -->
+
+        <!-- Conditional access remediation -->
+        <OrchestrationStep Order="4" Type="InvokeSubJourney">
+          <JourneyList>
+            <Candidate SubJourneyReferenceId="ConditionalAccess_Remediation" />
+          </JourneyList>
+        </OrchestrationStep>
+
+        <OrchestrationStep Order="5" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
+      </OrchestrationSteps>
+      <ClientDefinition ReferenceId="DefaultWeb" />
+    </UserJourney>
+  </UserJourneys>
+
+  <SubJourneys>
+    <SubJourney Id="IdentityProviderSelection_SignUpSignIn" Type="Call">
+      <OrchestrationSteps>
+        <!-- Sign-up or sign-in page-->
+        <OrchestrationStep Order="1" Type="CombinedSignInAndSignUp" ContentDefinitionReferenceId="api.signuporsignin">
+          <ClaimsProviderSelections>
+            <ClaimsProviderSelection ValidationClaimsExchangeId="LocalAccountSigninEmailExchange" />
+          </ClaimsProviderSelections>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="LocalAccountSigninEmailExchange" TechnicalProfileReferenceId="SelfAsserted-LocalAccountSignin-EmailCustom" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- Sign-up page. 
+             This step runs only if the objectId is null (user selects the sign-up option).
+             And the user isn't a remote one -->
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>objectId</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>remoteAadObjectID</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="SignUpWithLogonEmailExchange" TechnicalProfileReferenceId="LocalAccountSignUpWithLogonEmail" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- Get the local account profile.
+             Run this step only for local accounts -->
+        <OrchestrationStep Order="3" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>remoteAadObjectID</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AADUserReadWithObjectId" TechnicalProfileReferenceId="AAD-UserReadUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- Try to get the remote profile. 
+             Run this step only for remote accounts  -->
+        <OrchestrationStep Order="4" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>remoteAadObjectID</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AAD-UserReadUsingSignInName-NoError" TechnicalProfileReferenceId="AAD-UserReadUsingSignInName-NoError" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- If not exists, create a new remote account
+             Run this step only if the remote account is not in the B2C directory (the object ID is still with the default value "0") -->
+        <OrchestrationStep Order="5" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
+              <Value>objectId</Value>
+              <Value>0</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AAD-UserWriteRemoteAccount" TechnicalProfileReferenceId="AAD-UserWriteRemoteAccount" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+      </OrchestrationSteps>
+    </SubJourney>
+
+    <SubJourney Id="ConditionalAccess_Evaluation" Type="Call">
+      <OrchestrationSteps>
+        <OrchestrationStep Order="1" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="ConditionalAccessEvaluation" TechnicalProfileReferenceId="ConditionalAccessEvaluation" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>conditionalAccessClaimCollection</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="GenerateCAClaimFlags" TechnicalProfileReferenceId="GenerateCAClaimFlags" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+      </OrchestrationSteps>
+    </SubJourney>
+
+    <SubJourney Id="ConditionalAccess_Remediation" Type="Call">
+      <OrchestrationSteps>
+        <OrchestrationStep Order="1" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>conditionalAccessClaimCollection</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="ConditionalAccessRemediation" TechnicalProfileReferenceId="ConditionalAccessRemediation" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+      </OrchestrationSteps>
+    </SubJourney>
+
+    <SubJourney Id="BlockUser" Type="Call">
+      <OrchestrationSteps>
+        <OrchestrationStep Order="1" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="ShowBlockPage" TechnicalProfileReferenceId="ShowBlockPage" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+      </OrchestrationSteps>
+    </SubJourney>
+
+    <SubJourney Id="MFA-ExtraUserVerification" Type="Call">
+      <OrchestrationSteps>
+
+        <!-- MFA phone
+          Note: It's recommanded if a phone number isn't registred to block the user -->
+        <OrchestrationStep Order="1" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="PhoneFactor-Verify" TechnicalProfileReferenceId="PhoneFactor-InputOrVerify" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- Save MFA phone number: The precondition verifies whether the user provided a new number in the 
+             previous step. If so, then the phone number is stored in the directory for future authentication 
+             requests. See the note above about validation lonly -->
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>newPhoneNumberEntered</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AADUserWriteWithObjectId" TechnicalProfileReferenceId="AAD-UserWritePhoneNumberUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+      </OrchestrationSteps>
+    </SubJourney>
+
+    <SubJourney Id="PasswordReset" Type="Call">
+      <OrchestrationSteps>
+
+        <!-- Collect and persist a new password. -->
+        <OrchestrationStep Order="1" Type="ClaimsExchange">
+          <Preconditions>
+            <!-- Run this flow only for B2C accounts-->
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>remoteAadObjectID</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="NewCredentials" TechnicalProfileReferenceId="LocalAccountWritePasswordUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- Collect and persist a new password. -->
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <Preconditions>
+            <!-- Run this flow only for B2C accounts-->
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>remoteAadObjectID</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="SelfAsserted-UpdateAADPassword" TechnicalProfileReferenceId="SelfAsserted-UpdateAADPassword" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+      </OrchestrationSteps>
+    </SubJourney>
+
+  </SubJourneys>
+</TrustFrameworkPolicy>
