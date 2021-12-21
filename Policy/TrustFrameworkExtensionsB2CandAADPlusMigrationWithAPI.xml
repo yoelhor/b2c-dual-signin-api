@@ -331,7 +331,7 @@
             <!-- Password expiration-->
             <OutputClaim ClaimTypeReferenceId="passwordExpired" DefaultValue="false" />
 
-            <OutputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" DefaultValue="" />
+            <OutputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
           </OutputClaims>
           <OutputClaimsTransformations>
             <!-- Conditinal output claims transformations-->
@@ -622,6 +622,26 @@
           <IncludeTechnicalProfile ReferenceId="REST-Base" />
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>
+
+        <TechnicalProfile Id="REST-WritePhoneNumber">
+          <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>
+           <Metadata>
+            <Item Key="ServiceUrl">https://b2c-dual-signin-api.azurewebsites.net/WritePhoneNumber</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="remoteAadObjectID" PartnerClaimType="objectId" />
+            <InputClaim ClaimTypeReferenceId="Verified.strongAuthenticationPhoneNumber" PartnerClaimType="strongAuthenticationPhoneNumber" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="step" DefaultValue="REST-WritePhoneNumber" AlwaysUseDefaultValue="true" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="AddStep" />
+          </OutputClaimsTransformations>
+          <IncludeTechnicalProfile ReferenceId="REST-Base" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+        
       </TechnicalProfiles>
     </ClaimsProvider>
 
@@ -908,7 +928,7 @@
         </OrchestrationStep> -->
 
         <!-- Calling MFA sub-journey -->
-        <!-- <OrchestrationStep Order="4" Type="InvokeSubJourney">
+        <OrchestrationStep Order="4" Type="InvokeSubJourney">
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
               <Value>CAChallengeIsMfa</Value>
@@ -923,16 +943,16 @@
           <JourneyList>
             <Candidate SubJourneyReferenceId="MFA-ExtraUserVerification" />
           </JourneyList>
-        </OrchestrationStep> -->
+        </OrchestrationStep>
 
         <!-- Conditional access remediation -->
-        <OrchestrationStep Order="4" Type="InvokeSubJourney">
+        <OrchestrationStep Order="5" Type="InvokeSubJourney">
           <JourneyList>
             <Candidate SubJourneyReferenceId="ConditionalAccess_Remediation" />
           </JourneyList>
         </OrchestrationStep>
 
-        <OrchestrationStep Order="5" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
+        <OrchestrationStep Order="6" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
       </OrchestrationSteps>
       <ClientDefinition ReferenceId="DefaultWeb" />
     </UserJourney>
@@ -1075,11 +1095,17 @@
 
         <!-- Save MFA phone number: The precondition verifies whether the user provided a new number in the 
              previous step. If so, then the phone number is stored in the directory for future authentication 
-             requests. See the note above about validation lonly -->
+             requests. See the note above about validation lonly 
+             
+            Run this step for local account only-->
         <OrchestrationStep Order="2" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
               <Value>newPhoneNumberEntered</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>remoteAadObjectID</Value>
               <Action>SkipThisOrchestrationStep</Action>
             </Precondition>
           </Preconditions>
@@ -1087,7 +1113,26 @@
             <ClaimsExchange Id="AADUserWriteWithObjectId" TechnicalProfileReferenceId="AAD-UserWritePhoneNumberUsingObjectId" />
           </ClaimsExchanges>
         </OrchestrationStep>
-
+        <!-- Run this step for remove AAD account only-->
+        <OrchestrationStep Order="3" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>newPhoneNumberEntered</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>Verified.strongAuthenticationPhoneNumber</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>remoteAadObjectID</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="REST-WritePhoneNumber" TechnicalProfileReferenceId="REST-WritePhoneNumber" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
       </OrchestrationSteps>
     </SubJourney>
 
